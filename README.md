@@ -1,2 +1,6 @@
 # PulsarX
-a thing were u download my multi tool
+New Gen tool that has all your needs For :
+- Ethical Hacking 
+- .Bin Exploring
+- Ip Lookup
+- Geolocation
