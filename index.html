@@ -3,180 +3,335 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0f0f12">
+  <meta name="theme-color" content="#080b18">
   <meta name="description" content="PulsarX is a free, offline-ready collection of everyday text and data tools.">
   <title>PulsarX</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg-0: #0b0b0d;        /* very dark */
-      --bg-1: #0f1114;        /* light black */
-      --panel: rgba(255,255,255,0.03);
-      --muted: #9aa6a1;
-      --ink: #e7eef1;
-      --accent-purple: #8b5cf6;
-      --accent-deep: #1b1220;
-      --glass: rgba(255,255,255,0.025);
-      --mono: "DM Mono", "Courier New", monospace;
+    :root {
+      color-scheme: light;
+      --paper: #f2f1e9;
+      --ink: #17201d;
+      --muted: #67716a;
+      --line: #d5d8ce;
+      --green: #b9f36b;
+      --orange: #fb7044;
       --display: "Space Grotesk", "Trebuchet MS", sans-serif;
+      --mono: "DM Mono", "Courier New", monospace;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--display); }
+    a { color: inherit; }
+    .page { width: min(1120px, calc(100% - 56px)); margin: 0 auto; }
+    header { height: 76px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; text-decoration: none; }
+    .brand-mark { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 8px; background: var(--ink); color: var(--green); font-size: 15px; }
+    .header-note, .eyebrow, .meta, .tool-index, .preview-label { font-family: var(--mono); font-size: 11px; letter-spacing: .04em; }
+    .header-note { color: var(--muted); }
+    main { padding: 76px 0 42px; }
+    .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+    .eyebrow { display: flex; align-items: center; gap: 9px; color: #53624f; text-transform: uppercase; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #69aa3f; box-shadow: 0 0 0 4px #69aa3f20; }
+    h1 { max-width: 570px; margin: 23px 0 18px; font-size: clamp(46px, 6vw, 76px); line-height: .99; letter-spacing: -.055em; }
+    h1 span { color: #789c50; }
+    .intro { max-width: 440px; margin: 0; color: #5b655e; font-size: 17px; line-height: 1.65; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 30px; }
+    .download { min-height: 54px; display: inline-flex; align-items: center; gap: 12px; padding: 0 20px; border: 1px solid var(--ink); border-radius: 5px; background: var(--green); font-weight: 700; text-decoration: none; transition: transform .18s ease, background .18s ease; }
+    .download:hover { transform: translateY(-2px); background: #a9eb57; }
+    .download svg { width: 18px; height: 18px; }
+    .meta { color: var(--muted); line-height: 1.8; }
+    .meta strong { color: var(--ink); font-weight: 500; }
+    .preview { position: relative; min-height: 365px; overflow: hidden; padding: 22px; border: 1px solid #28332e; border-radius: 9px; background: #1b2521; color: #f2f1e9; box-shadow: 12px 14px 0 #dfe1d5; animation: arrive .65s ease both; }
+    .preview:after { position: absolute; top: -73px; right: -52px; width: 200px; height: 200px; border: 1px solid #b9f36b38; border-radius: 50%; box-shadow: 0 0 0 22px #b9f36b0c, 0 0 0 48px #b9f36b09; content: ""; pointer-events: none; }
+    .preview-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid #ffffff20; }
+    .preview-label { color: #adb9ae; text-transform: uppercase; }
+    .preview-version { color: var(--green); font: 11px var(--mono); }
+    .preview h2 { position: relative; z-index: 1; margin: 25px 0 5px; font-size: 25px; letter-spacing: -.04em; }
+    .preview-copy { position: relative; z-index: 1; margin: 0 0 22px; color: #9da89f; font-size: 13px; }
+    .preview-tools { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .preview-tool { min-height: 66px; display: flex; align-items: center; gap: 11px; padding: 11px; border: 1px solid #ffffff1a; border-radius: 5px; background: #ffffff08; }
+    .tool-icon { width: 31px; height: 31px; display: grid; flex: none; place-items: center; border: 1px solid #b9f36b50; border-radius: 4px; color: var(--green); font: 12px var(--mono); }
+    .tool-name { font-size: 13px; font-weight: 600; }
+    .tool-index { margin-top: 3px; color: #91a095; font-size: 9px; }
+    .local-note { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; margin-top: 19px; color: #b5c0b6; font: 10px var(--mono); }
+    .local-note span { color: var(--green); }
+    .tool-strip { display: grid; grid-template-columns: 150px repeat(4, 1fr); align-items: center; gap: 18px; margin-top: 85px; padding: 22px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .strip-heading { color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+    .strip-item { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; }
+    .strip-item b { color: #789c50; font: 12px var(--mono); }
+    .bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 0 30px; color: var(--muted); font: 10px var(--mono); }
+    .bottom a { text-decoration-color: #a8b0a7; text-underline-offset: 3px; }
+    @keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 36px, 540px); }
+      header { height: 64px; }
+      main { padding-top: 50px; }
+      .hero { grid-template-columns: 1fr; gap: 35px; }
+      h1 { max-width: 440px; font-size: clamp(48px, 12vw, 68px); }
+      .preview { min-height: auto; }
+      .tool-strip { grid-template-columns: 1fr 1fr; gap: 17px 10px; margin-top: 55px; }
+      .strip-heading { grid-column: 1 / -1; }
+      .bottom { align-items: flex-start; flex-direction: column; gap: 7px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    body {
+      background-color: var(--paper);
+      background-image: linear-gradient(#16231c0a 1px, transparent 1px), linear-gradient(90deg, #16231c0a 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .page { width: min(1200px, calc(100% - 72px)); }
+    header { height: 72px; border-color: #17201d30; }
+    .brand-mark { border-radius: 5px; background: var(--orange); color: var(--ink); }
+    .header-note { color: #4d5a51; }
+    main { padding-top: 55px; }
+    .hero { grid-template-columns: 1fr 1fr; gap: 64px; min-height: 520px; }
+    .eyebrow { color: #506547; }
+    .live-dot { background: #528a43; box-shadow: 0 0 0 4px #528a4320; }
+    h1 { max-width: 540px; margin: 25px 0 21px; font-size: 78px; line-height: .99; letter-spacing: -.055em; }
+    h1 span { color: #63883e; }
+    .intro { max-width: 450px; color: #4e5b52; font-size: 17px; }
+    .download { min-height: 58px; border: 1px solid var(--ink); border-radius: 4px; background: var(--orange); box-shadow: 4px 4px 0 var(--ink); }
+    .download:hover { transform: translate(2px, 2px); background: #fa805b; box-shadow: 2px 2px 0 var(--ink); }
+    .meta { color: #536055; }
+    .meta strong { font-weight: 600; }
+    .preview { min-height: 390px; padding: 23px; border: 1px solid #18231e; border-radius: 5px; background: #19251f; box-shadow: 9px 9px 0 #b9f36b; animation: arrive .65s ease both; }
+    .preview:after { top: auto; right: 0; bottom: 0; width: 5px; height: 100%; border: 0; border-radius: 0; background: var(--orange); box-shadow: none; }
+    .preview-top { padding-bottom: 14px; border-color: #ffffff25; }
+    .preview-label { display: flex; align-items: center; gap: 9px; color: #e8ede4; }
+    .preview-label:before { width: 9px; height: 9px; border-radius: 2px; background: var(--orange); content: ""; }
+    .preview-version { color: #b9f36b; }
+    .preview h2 { margin: 25px 0 20px; font-size: 14px; font-weight: 500; letter-spacing: 0; }
+    .ip-label, .readout-label, .app-modules, .privacy-label { font: 10px var(--mono); letter-spacing: .045em; text-transform: uppercase; }
+    .ip-label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; color: #9daa9e; }
+    .ip-label span { color: #738278; font-size: 9px; }
+    .ip-value { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; border: 1px solid #536157; border-radius: 3px; background: #121b16; }
+    .ip-value code { color: #eef1e8; font: 20px var(--mono); }
+    .ip-status { display: inline-flex; align-items: center; gap: 7px; color: #b9f36b; font: 10px var(--mono); }
+    .ip-status:before { width: 7px; height: 7px; border-radius: 50%; background: #b9f36b; content: ""; }
+    .readouts { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; margin-top: 15px; }
+    .readout { min-width: 0; padding: 11px 0 10px; border-bottom: 1px solid #ffffff20; }
+    .readout-label { display: block; margin-bottom: 5px; color: #91a095; font-size: 9px; }
+    .readout-value { display: block; overflow: hidden; color: #e1e8de; font: 11px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+    .app-modules { display: flex; flex-wrap: wrap; gap: 8px 17px; margin-top: 17px; color: #adb9ae; font-size: 9px; }
+    .app-modules span:before { margin-right: 6px; color: var(--orange); content: "/"; }
+    .tool-strip { grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 48px; padding: 0; border-color: #17201d40; }
+    .strip-heading { grid-column: 1 / -1; padding: 0 0 15px; color: #506047; }
+    .strip-item { min-height: 49px; padding: 0 12px; border-right: 1px solid #17201d30; font-size: 12px; }
+    .strip-item:first-of-type { padding-left: 0; }
+    .strip-item:last-child { border-right: 0; }
+    .strip-item b { color: #d34f32; }
+    .privacy { display: flex; align-items: start; gap: 20px; margin: 43px 0 10px; padding: 19px 0; border-top: 1px solid #17201d40; border-bottom: 1px solid #17201d40; }
+    .privacy-label { flex: 0 0 155px; padding-top: 3px; color: #bd4c33; }
+    .privacy p { max-width: 730px; margin: 0; color: #536055; font-size: 13px; line-height: 1.7; }
+    .privacy strong { color: var(--ink); }
+    .bottom { padding-top: 20px; color: #59655c; }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 36px, 540px); }
+      header { height: 64px; }
+      main { padding-top: 42px; }
+      .hero { grid-template-columns: 1fr; gap: 34px; min-height: 0; }
+      h1 { max-width: 440px; font-size: 57px; }
+      .preview { min-height: 0; }
+      .tool-strip { grid-template-columns: 1fr 1fr; margin-top: 50px; }
+      .strip-heading { grid-column: 1 / -1; }
+      .strip-item { padding: 9px 4px; border-right: 0; }
+      .strip-item:first-of-type { padding-left: 4px; }
+      .privacy { flex-direction: column; gap: 8px; margin-top: 30px; }
+      .privacy-label { flex-basis: auto; }
+      .bottom { align-items: flex-start; flex-direction: column; gap: 7px; }
+    }
+    @media (max-width: 390px) {
+      .header-note { font-size: 9px; }
+      h1 { font-size: 49px; }
+      .ip-value code { font-size: 17px; }
+      .ip-label span { max-width: 110px; text-align: right; }
+    }
+    :root {
       color-scheme: dark;
+      --paper: #080b18;
+      --ink: #f1f3ff;
+      --muted: #a0a8c2;
+      --line: #ffffff20;
+      --green: #9fffe0;
+      --orange: #ff8cce;
     }
-
-    /* Reset & layout */
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--display);
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(139,92,246,0.06), transparent 8%),
-                  linear-gradient(180deg,var(--bg-1),var(--bg-0));
-      color:var(--ink);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      background-attachment: fixed;
+    body {
+      position: relative;
+      isolation: isolate;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background:
+        radial-gradient(ellipse at 16% 18%, #54288742, transparent 36rem),
+        radial-gradient(ellipse at 84% 43%, #07527436, transparent 34rem),
+        radial-gradient(ellipse at 50% 105%, #28316b38, transparent 38rem),
+        #080b18;
+      color: var(--ink);
     }
-    .page{width:min(1120px,calc(100% - 56px)); margin:32px auto 64px; }
-
-    /* Header */
-    header{height:72px; display:flex; align-items:center; justify-content:space-between; gap:16px}
-    .brand{display:inline-flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink); font-weight:700; font-size:18px}
-    .brand-mark{
-      width:36px; height:36px; display:grid; place-items:center; border-radius:8px;
-      background: linear-gradient(135deg,var(--accent-purple),var(--accent-deep));
-      color:#fff; font-weight:700; box-shadow: 0 6px 18px rgba(11,8,15,0.65), inset 0 -6px 18px rgba(255,255,255,0.02);
-      font-size:16px;
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: -50%;
+      background-image:
+        radial-gradient(1px 1px at 24px 38px, #ffffffc9 99%, transparent),
+        radial-gradient(1px 1px at 140px 116px, #a8caffb0 99%, transparent),
+        radial-gradient(2px 2px at 82px 178px, #ffffffb0 99%, transparent),
+        radial-gradient(1px 1px at 196px 54px, #d4c4ffb0 99%, transparent);
+      background-size: 220px 220px, 280px 280px, 340px 340px, 400px 400px;
+      content: "";
+      opacity: .6;
+      pointer-events: none;
+      animation: star-drift 100s linear infinite;
     }
-    .header-note{font:11px var(--mono); color:var(--muted); letter-spacing:.04em}
-
-    /* Main hero */
-    main{padding-top:18px}
-    .hero{display:grid; grid-template-columns:1fr 0.95fr; gap:42px; align-items:center; min-height:460px}
-    .eyebrow{display:flex; align-items:center; gap:8px; font:11px var(--mono); color:var(--muted); text-transform:uppercase}
-    .live-dot{width:8px;height:8px;border-radius:50%; background:#b39cff; box-shadow:0 0 0 6px rgba(139,92,246,0.12)}
-    h1{margin:14px 0 12px; font-size:clamp(46px,6vw,72px); line-height:0.98; letter-spacing:-0.02em; max-width:620px; font-weight:700; color:var(--ink)}
-    /* Purple -> black gradient text for PulsarX word */
-    h1 .gradient-title{
-      display:inline-block;
-      background: linear-gradient(135deg, var(--accent-purple) 0%, #3f2753 40%, #0b0b0d 100%);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-      -webkit-text-fill-color:transparent;
-      text-shadow: 0 6px 22px rgba(139,92,246,0.12);
-      padding-right:6px;
+    .page { position: relative; width: min(1200px, calc(100% - 72px)); }
+    header { border-color: #ffffff20; }
+    .brand { color: #f5f4ff; }
+    .brand-mark {
+      border-radius: 8px;
+      background: linear-gradient(135deg, #a4ffe1, #73d8ff);
+      color: #101526;
+      box-shadow: 0 0 24px #6de7e344;
     }
-    .intro{max-width:500px; color:var(--muted); font-size:16px; line-height:1.6}
-
-    /* Actions */
-    .actions{display:flex; gap:14px; align-items:center; margin-top:26px}
-    .download{
-      display:inline-flex; align-items:center; gap:12px; padding:12px 18px; border-radius:10px; text-decoration:none;
-      background: linear-gradient(90deg, var(--accent-purple), #6c3be8 60%);
-      color:white; font-weight:700; box-shadow: 0 10px 30px rgba(139,92,246,0.16);
-      transition:transform .18s ease, box-shadow .18s ease;
-      border: 1px solid rgba(255,255,255,0.04);
+    .header-note { color: #aab4d0; }
+    main { padding-top: 68px; }
+    .hero { min-height: 500px; }
+    .eyebrow { color: #b9c9ed; }
+    .live-dot {
+      background: #8bffd2;
+      box-shadow: 0 0 0 4px #8bffd226, 0 0 16px #8bffd2a8;
     }
-    .download:hover{ transform:translateY(-4px); box-shadow:0 18px 40px rgba(139,92,246,0.22) }
-    .meta{font:13px var(--mono); color:var(--muted)}
-
-    /* Preview card */
-    .preview{
-      position:relative; padding:22px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.04); min-height:360px; box-shadow: 0 18px 50px rgba(2,6,10,0.65);
-      backdrop-filter: blur(6px);
+    h1 { color: #f5f4ff; font-size: clamp(48px, 6vw, 78px); }
+    h1 span {
+      background: linear-gradient(95deg, #a1ffe0 5%, #91c7ff 56%, #d4a5ff 100%);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .preview-top{display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.03)}
-    .preview-label{font:11px var(--mono); color:var(--muted); display:flex; align-items:center; gap:10px}
-    .preview-version{font:11px var(--mono); color:var(--accent-purple); font-weight:600}
-    .preview h2{margin:20px 0 8px; font-size:14px; color:var(--ink); letter-spacing:0}
-    .ip-label{display:flex; justify-content:space-between; gap:12px; margin-bottom:8px; color:var(--muted); font:11px var(--mono)}
-    .ip-value{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 14px; border-radius:8px; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03)}
-    .ip-value code{font:20px var(--mono); color:var(--ink); background:transparent; border:0}
-    .ip-status{color:#cdb8ff; font:11px var(--mono); display:inline-flex; align-items:center; gap:8px}
-    .readouts{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px}
-    .readout{padding:10px; border-radius:8px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02)}
-    .readout-label{display:block; font:10px var(--mono); color:var(--muted); margin-bottom:6px}
-    .readout-value{font:12px var(--mono); color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-
-    .app-modules{display:flex; flex-wrap:wrap; gap:8px 12px; margin-top:14px; color:var(--muted); font-size:12px}
-    .app-modules span:before{content:"/"; margin-right:6px; color:#bda1ff}
-
-    /* Tool strip */
-    .tool-strip{display:grid; grid-template-columns:150px repeat(4,1fr); gap:18px; margin-top:44px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.02)}
-    .strip-heading{grid-column:1/-1; color:var(--muted); font:10px var(--mono); text-transform:uppercase; padding-bottom:8px}
-    .strip-item{display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--ink); padding:10px; border-radius:8px; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border:1px solid rgba(255,255,255,0.02)}
-
-    /* Privacy */
-    .privacy{display:flex; gap:20px; margin-top:36px; padding:18px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.02)}
-    .privacy-label{flex:0 0 160px; color:var(--muted); font:11px var(--mono)}
-    .privacy p{margin:0; color:var(--muted); line-height:1.7; font-size:14px}
-
-    /* Footer */
-    footer.bottom{display:flex; justify-content:space-between; gap:12px; margin-top:28px; color:var(--muted); font:12px var(--mono)}
-    footer.bottom a{color:var(--muted); text-decoration:underline 1px rgba(255,255,255,0.03)}
-
-    /* Responsive */
-    @media(max-width:880px){
-      .page{width:min(100% - 36px, 720px); margin:20px auto}
-      .hero{grid-template-columns:1fr; gap:28px}
-      .tool-strip{grid-template-columns:1fr 1fr; gap:12px}
-      .brand-mark{width:30px;height:30px}
+    .intro { color: #b2bad1; }
+    .download {
+      border-color: #a4ffe1;
+      border-radius: 8px;
+      background: linear-gradient(110deg, #a4ffe1, #8de0ff);
+      color: #101725;
+      box-shadow: 0 0 26px #7af2da30, 0 4px 18px #05071380;
     }
-    @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+    .download:hover {
+      background: linear-gradient(110deg, #c2ffed, #a8eaff);
+      box-shadow: 0 0 36px #7af2da55, 0 4px 18px #05071380;
+    }
+    .meta { color: #a0a9c1; }
+    .meta strong { color: #eff3ff; }
+    .preview {
+      position: relative;
+      border-color: #b4bbff30;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #182139ed, #101627f2 70%);
+      box-shadow: 0 26px 80px #0008, 0 0 55px #8653ca24, inset 0 1px #ffffff12;
+    }
+    .preview::before {
+      position: absolute;
+      top: 76px;
+      right: -79px;
+      width: 205px;
+      height: 205px;
+      border: 1px solid #a4ffe13d;
+      border-radius: 50%;
+      box-shadow: 0 0 0 19px #a4ffe108, 0 0 0 42px #a4ffe106, inset 0 0 38px #a4ffe10a;
+      content: "";
+      pointer-events: none;
+      animation: orbit-drift 36s linear infinite;
+    }
+    .preview:after {
+      top: 0;
+      right: 0;
+      bottom: auto;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #a4ffe1, #c09bff, transparent);
+    }
+    .preview-top { border-color: #ffffff1c; }
+    .preview-label { color: #c7d2ee; }
+    .preview-label:before { border-radius: 50%; background: #a4ffe1; box-shadow: 0 0 12px #a4ffe188; }
+    .preview-version { color: #a4ffe1; }
+    .ip-label { color: #abb7d0; }
+    .ip-label span { color: #9ba8c3; }
+    .ip-value {
+      border-color: #a8bbff34;
+      border-radius: 8px;
+      background: #0b1020b8;
+      box-shadow: inset 0 1px #ffffff0a;
+    }
+    .ip-status { color: #a4ffe1; }
+    .ip-status:before { background: #a4ffe1; box-shadow: 0 0 10px #a4ffe1a0; }
+    .readout { border-color: #ffffff18; }
+    .readout-label { color: #97a5c3; }
+    .readout-value { color: #e3e9ff; }
+    .app-modules { color: #b8c3df; }
+    .app-modules span:before { color: #d5a1ff; }
+    .tool-strip { border-color: #ffffff26; }
+    .strip-heading { color: #9eabc7; }
+    .strip-item { border-color: #ffffff20; color: #e3e9fa; }
+    .strip-item b { color: #a4ffe1; }
+    .privacy { border-color: #ffffff26; }
+    .privacy-label { color: #d5a1ff; }
+    .privacy p { color: #b2bad1; }
+    .privacy strong { color: #eef2ff; }
+    .bottom { color: #9da8c2; }
+    .bottom a { text-decoration-color: #7987a8; }
+    a:focus-visible { outline: 2px solid #a4ffe1; outline-offset: 5px; }
+    @keyframes star-drift {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(220px, 280px, 0); }
+    }
+    @keyframes orbit-drift {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @media (max-width: 760px) {
+      main { padding-top: 46px; }
+      .hero { min-height: 0; }
+      .tool-strip { border-color: #ffffff26; }
+      .strip-item { border-right: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body::before, .preview::before { animation: none; }
+    }
   </style>
 </head>
 <body>
   <div class="page">
     <header>
-      <a class="brand" href="#top" aria-label="PulsarX home">
-        <span class="brand-mark" aria-hidden="true">✳</span>
-        <span style="display:flex;flex-direction:column;line-height:1;">
-          <span style="font-size:14px">PulsarX</span>
-          <small style="font:10px var(--mono); color:var(--muted); margin-top:2px;">Toolkit · Windows</small>
-        </span>
-      </a>
-      <span class="header-note">IP / CODE / FILES · WINDOWS</span>
+      <a class="brand" href="#top" aria-label="PulsarX home"><span class="brand-mark" aria-hidden="true">✳</span>PulsarX</a>
+      <span class="header-note">IP / CODE / FILES&nbsp;&nbsp; · &nbsp;&nbsp;WINDOWS</span>
     </header>
-
     <main id="top">
       <section class="hero" aria-labelledby="headline">
         <div>
-          <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span>Windows toolkit · version 1.0</div>
-          <h1 id="headline">See what’s<br>under the <span class="gradient-title">PulsarX</span></h1>
-          <p class="intro">A compact Windows toolkit for IP diagnostics, geolocation lookups, C# code, and file inspection. Four practical workspaces, in one download — built for speed and offline work.</p>
-
+          <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span>Windows toolkit&nbsp; / &nbsp;version 1.0</div>
+          <h1 id="headline">See what’s<br>under the <span>hood.</span></h1>
+          <p class="intro">A compact Windows toolkit for IP diagnostics, geolocation lookups, C# code, and file inspection. Four practical workspaces, in one download.</p>
           <div class="actions">
-            <a class="download" href="PulsarX.zip" download="PulsarX.zip" aria-label="Download PulsarX">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+            <a class="download" href="PulsarX.zip" download="PulsarX.zip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg>
               Download PulsarX.zip
             </a>
             <div class="meta"><strong>ZIP archive</strong><br>Windows · .NET 4.7.2</div>
           </div>
         </div>
-
         <section class="preview" aria-label="What's inside the toolkit">
-          <div class="preview-top">
-            <span class="preview-label">Pulsar Tool / IP workbench</span>
-            <span class="preview-version">WINDOWS · V1.0</span>
-          </div>
-
+          <div class="preview-top"><span class="preview-label">Pulsar Tool / IP workbench</span><span class="preview-version">WINDOWS · V1.0</span></div>
           <h2>ADDRESS INSPECTOR</h2>
           <div class="ip-label">IP ADDRESS <span>VALIDATION COMPLETE</span></div>
           <div class="ip-value"><code>192.168.1.42</code><span class="ip-status">PRIVATE / IPv4</span></div>
-
           <div class="readouts">
             <div class="readout"><span class="readout-label">ADDRESS TYPE</span><span class="readout-value">Private · Class C</span></div>
             <div class="readout"><span class="readout-label">CIDR RANGE</span><span class="readout-value">/24 · 255.255.255.0</span></div>
             <div class="readout"><span class="readout-label">HEX VALUE</span><span class="readout-value">C0A8012A</span></div>
             <div class="readout"><span class="readout-label">IP INTEGER</span><span class="readout-value">3232235818</span></div>
           </div>
-
           <div class="app-modules"><span>IP Tools</span><span>Geolocation</span><span>C# Processor</span><span>File Inspector</span></div>
         </section>
       </section>
-
       <section class="tool-strip" aria-label="Included tools">
         <span class="strip-heading">Four workspaces · one toolkit</span>
         <span class="strip-item"><b>01</b> IP diagnostics</span>
@@ -184,17 +339,12 @@
         <span class="strip-item"><b>03</b> C# code tools</span>
         <span class="strip-item"><b>04</b> File inspector</span>
       </section>
-
       <aside class="privacy" id="lookup-note">
         <span class="privacy-label">A note on geolocation</span>
-        <p><strong>IP lookups use an external service.</strong> The geolocation tool requests data from ip-api.com, so the IP address you look up is sent to that service. The other workspaces run in-tool and do not send your inputs externally unless noted.</p>
+        <p><strong>Anti Virus Coming SOON??? </strong>Killer is tuff AF</p>
       </aside>
     </main>
-
-    <footer class="bottom">
-      <span>© 2026 PulsarX · Windows desktop toolkit</span>
-      <a href="#lookup-note">Geolocation &amp; privacy</a>
-    </footer>
+    <footer class="bottom"><span> 2026 PulsarX · Windows desktop toolkit</span><a href="#lookup-note">Geolocation &amp; privacy</a></footer>
   </div>
 </body>
 </html>
