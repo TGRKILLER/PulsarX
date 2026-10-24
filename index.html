@@ -1,4 +1,4 @@
-<!doctype html>
+!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -414,11 +414,11 @@
         <span class="strip-item"><b>04</b> File inspector</span>
       </section>
       <aside class="privacy" id="lookup-note">
-        <span class="privacy-label">WSG CHATTT</span>
-        <p><strong>No VIDUS here</strong>PULSAR X</p>
+        <span class="privacy-label">A note on geolocation</span>
+        <p><strong>IP lookups use an external service.</strong> The geolocation tool requests data from ip-api.com, so the IP address you look up is sent to that service. The other workspaces run in the desktop app.</p>
       </aside>
     </main>
-    <footer class="bottom"><span> 2026 PulsarX · Windows desktop toolkit</span><a href="#lookup-note">Geolocation &amp; privacy</a></footer>
+    <footer class="bottom"><span>© 2026 PulsarX · Windows desktop toolkit</span><a href="#lookup-note">Geolocation &amp; privacy</a></footer>
   </div>
   <script>
     const canvas = document.querySelector(".space-canvas");
@@ -442,6 +442,89 @@
     let pointerX = 0;
     let pointerY = 0;
     let animationFrame;
+    let eventTimer;
+    let skyEvent;
+
+    function scheduleSkyEvent() {
+      window.clearTimeout(eventTimer);
+      if (reducedMotion.matches || document.hidden) return;
+      eventTimer = window.setTimeout(() => {
+        const meteor = Math.random() < 0.65;
+        skyEvent = {
+          type: meteor ? "meteor" : "flare",
+          start: performance.now(),
+          duration: meteor ? 1250 : 4200,
+          x: width * (0.08 + Math.random() * 0.84),
+          y: height * (0.08 + Math.random() * 0.72),
+          angle: 2.35 + Math.random() * 0.5,
+          length: Math.min(250, width * 0.3),
+          size: 22 + Math.random() * 20
+        };
+        scheduleSkyEvent();
+      }, 9000 + Math.random() * 17000);
+    }
+
+    function drawSkyEvent(time) {
+      if (!skyEvent) return;
+      const event = skyEvent;
+      const progress = (time - event.start) / event.duration;
+      if (progress >= 1) {
+        skyEvent = null;
+        return;
+      }
+
+      if (event.type === "meteor") {
+        const fade = Math.sin(Math.PI * progress);
+        const headX = event.x + Math.cos(event.angle) * event.length * progress;
+        const headY = event.y + Math.sin(event.angle) * event.length * progress;
+        const tail = context.createLinearGradient(
+          headX - Math.cos(event.angle) * 95,
+          headY - Math.sin(event.angle) * 95,
+          headX,
+          headY
+        );
+        tail.addColorStop(0, "rgba(164, 207, 255, 0)");
+        tail.addColorStop(1, `rgba(226, 241, 255, ${fade * 0.8})`);
+        context.beginPath();
+        context.moveTo(headX - Math.cos(event.angle) * 95, headY - Math.sin(event.angle) * 95);
+        context.lineTo(headX, headY);
+        context.strokeStyle = tail;
+        context.lineWidth = 1.5;
+        context.stroke();
+        context.beginPath();
+        context.arc(headX, headY, 1.8, 0, Math.PI * 2);
+        context.fillStyle = `rgba(255, 255, 255, ${fade})`;
+        context.shadowColor = "#b6dcff";
+        context.shadowBlur = 12;
+        context.fill();
+        context.shadowBlur = 0;
+        return;
+      }
+
+      const peak = Math.exp(-Math.pow((progress - 0.22) / 0.13, 2));
+      const fade = 1 - progress;
+      const glow = context.createRadialGradient(event.x, event.y, 0, event.x, event.y, event.size * 2.8);
+      glow.addColorStop(0, `rgba(220, 235, 255, ${peak * 0.62})`);
+      glow.addColorStop(0.16, `rgba(157, 205, 255, ${peak * 0.2})`);
+      glow.addColorStop(1, "rgba(157, 205, 255, 0)");
+      context.fillStyle = glow;
+      context.fillRect(event.x - event.size * 2.8, event.y - event.size * 2.8, event.size * 5.6, event.size * 5.6);
+
+      [1, 1.55].forEach((scale, index) => {
+        context.beginPath();
+        context.arc(event.x, event.y, 3 + progress * event.size * scale, 0, Math.PI * 2);
+        context.strokeStyle = `rgba(194, 220, 255, ${fade * (index ? 0.16 : 0.32)})`;
+        context.lineWidth = 1;
+        context.stroke();
+      });
+      context.beginPath();
+      context.arc(event.x, event.y, 1.5 + peak * 2.5, 0, Math.PI * 2);
+      context.fillStyle = `rgba(255, 255, 255, ${Math.min(1, peak * 1.5 + fade * 0.15)})`;
+      context.shadowColor = "#c7e1ff";
+      context.shadowBlur = peak * 24;
+      context.fill();
+      context.shadowBlur = 0;
+    }
 
     function resizeCanvas() {
       pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -507,6 +590,7 @@
         context.shadowBlur = 0;
       });
 
+      drawSkyEvent(time);
       if (!reducedMotion.matches) animationFrame = window.requestAnimationFrame(drawSpace);
     }
 
@@ -517,11 +601,29 @@
     }, { passive: true });
     reducedMotion.addEventListener("change", () => {
       window.cancelAnimationFrame(animationFrame);
-      if (!reducedMotion.matches) animationFrame = window.requestAnimationFrame(drawSpace);
-      else drawSpace(0);
+      window.clearTimeout(eventTimer);
+      skyEvent = null;
+      if (!reducedMotion.matches && !document.hidden) {
+        animationFrame = window.requestAnimationFrame(drawSpace);
+        scheduleSkyEvent();
+      } else {
+        drawSpace(0);
+      }
+    });
+    document.addEventListener("visibilitychange", () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(eventTimer);
+      skyEvent = null;
+      if (!document.hidden && !reducedMotion.matches) {
+        animationFrame = window.requestAnimationFrame(drawSpace);
+        scheduleSkyEvent();
+      }
     });
     resizeCanvas();
-    if (!reducedMotion.matches) animationFrame = window.requestAnimationFrame(drawSpace);
+    if (!reducedMotion.matches) {
+      animationFrame = window.requestAnimationFrame(drawSpace);
+      scheduleSkyEvent();
+    }
   </script>
 </body>
 </html>
