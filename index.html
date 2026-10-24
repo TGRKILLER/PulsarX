@@ -296,13 +296,87 @@
     @media (prefers-reduced-motion: reduce) {
       body::before, .preview::before { animation: none; }
     }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    header {
+      position: sticky;
+      z-index: 5;
+      top: 12px;
+      height: 62px;
+      margin-top: 12px;
+      padding: 0 16px;
+      border: 1px solid #ffffff1c;
+      border-radius: 16px;
+      background: #0b1021c9;
+      box-shadow: 0 12px 40px #0003, inset 0 1px #ffffff0a;
+      backdrop-filter: blur(18px);
+    }
+    .page { z-index: 1; }
+    .space-canvas {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .site-nav { display: flex; align-items: center; gap: 7px; }
+    .site-nav a {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 13px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      color: #aeb8d2;
+      font-size: 12px;
+      text-decoration: none;
+      transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .site-nav a:hover, .site-nav a:focus-visible {
+      transform: translateY(-2px);
+      border-color: #ffffff20;
+      background: #ffffff0c;
+      color: #f1f3ff;
+    }
+    .site-nav .nav-download {
+      border-color: #a4ffe13b;
+      background: #a4ffe112;
+      color: #a4ffe1;
+    }
+    .site-nav .nav-download:hover { background: #a4ffe124; }
+    .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #a4ffe1; box-shadow: 0 0 9px #a4ffe1a0; }
+    .brand { white-space: nowrap; }
+    .tool-strip, .privacy { scroll-margin-top: 96px; }
+    @media (max-width: 600px) {
+      header { top: 8px; height: 58px; margin-top: 8px; padding: 0 10px; border-radius: 14px; }
+      .page { width: min(100% - 28px, 540px); }
+      .site-nav { gap: 2px; }
+      .site-nav a { min-height: 36px; gap: 6px; padding: 0 9px; font-size: 11px; }
+      .header-note { display: none; }
+    }
+    @media (max-width: 370px) {
+      .brand { gap: 7px; font-size: 16px; }
+      .brand-mark { width: 23px; height: 23px; }
+      .site-nav a { padding: 0 7px; font-size: 10px; }
+      .site-nav a:nth-child(2) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .site-nav a { transition: none; }
+    }
   </style>
 </head>
 <body>
+  <canvas class="space-canvas" aria-hidden="true"></canvas>
   <div class="page">
     <header>
       <a class="brand" href="#top" aria-label="PulsarX home"><span class="brand-mark" aria-hidden="true">✳</span>PulsarX</a>
-      <span class="header-note">IP / CODE / FILES&nbsp;&nbsp; · &nbsp;&nbsp;WINDOWS</span>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#workspaces"><span class="nav-dot" aria-hidden="true"></span>Explore</a>
+        <a href="#lookup-note">Privacy</a>
+        <a class="nav-download" href="#download">Get PulsarX <span aria-hidden="true">↗</span></a>
+      </nav>
     </header>
     <main id="top">
       <section class="hero" aria-labelledby="headline">
@@ -311,7 +385,7 @@
           <h1 id="headline">See what’s<br>under the <span>hood.</span></h1>
           <p class="intro">A compact Windows toolkit for IP diagnostics, geolocation lookups, C# code, and file inspection. Four practical workspaces, in one download.</p>
           <div class="actions">
-            <a class="download" href="PulsarX.zip" download="PulsarX.zip">
+            <a class="download" id="download" href="PulsarX.zip" download="PulsarX.zip">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg>
               Download PulsarX.zip
             </a>
@@ -332,7 +406,7 @@
           <div class="app-modules"><span>IP Tools</span><span>Geolocation</span><span>C# Processor</span><span>File Inspector</span></div>
         </section>
       </section>
-      <section class="tool-strip" aria-label="Included tools">
+      <section class="tool-strip" id="workspaces" aria-label="Included tools">
         <span class="strip-heading">Four workspaces · one toolkit</span>
         <span class="strip-item"><b>01</b> IP diagnostics</span>
         <span class="strip-item"><b>02</b> Geolocation</span>
@@ -340,11 +414,114 @@
         <span class="strip-item"><b>04</b> File inspector</span>
       </section>
       <aside class="privacy" id="lookup-note">
-        <span class="privacy-label">A note on geolocation</span>
-        <p><strong>Anti Virus Coming SOON??? </strong>Killer is tuff AF</p>
+        <span class="privacy-label">WSG CHATTT</span>
+        <p><strong>No VIDUS here</strong>PULSAR X</p>
       </aside>
     </main>
     <footer class="bottom"><span> 2026 PulsarX · Windows desktop toolkit</span><a href="#lookup-note">Geolocation &amp; privacy</a></footer>
   </div>
+  <script>
+    const canvas = document.querySelector(".space-canvas");
+    const context = canvas.getContext("2d");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const stars = Array.from({ length: 150 }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      size: Math.random() * 1.5 + 0.35,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 1.4 + 0.35
+    }));
+    const pulsars = [
+      { x: 0.14, y: 0.3, size: 44, color: "135, 159, 255", speed: 0.34 },
+      { x: 0.84, y: 0.22, size: 30, color: "164, 255, 225", speed: -0.24 },
+      { x: 0.77, y: 0.78, size: 54, color: "207, 158, 255", speed: 0.18 }
+    ];
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+    let pointerX = 0;
+    let pointerY = 0;
+    let animationFrame;
+
+    function resizeCanvas() {
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      if (reducedMotion.matches) drawSpace(0);
+    }
+
+    function drawSpace(time) {
+      context.clearRect(0, 0, width, height);
+      const seconds = time / 1000;
+      const shiftX = pointerX * 12;
+      const shiftY = pointerY * 12;
+
+      stars.forEach(star => {
+        const twinkle = reducedMotion.matches ? 0.72 : 0.38 + (Math.sin(seconds * star.speed + star.phase) + 1) * 0.31;
+        const x = (star.x * width + shiftX * star.size + width) % width;
+        const y = (star.y * height + shiftY * star.size + height) % height;
+        context.beginPath();
+        context.arc(x, y, star.size, 0, Math.PI * 2);
+        context.fillStyle = `rgba(220, 231, 255, ${twinkle})`;
+        context.fill();
+      });
+
+      pulsars.forEach(pulsar => {
+        const x = pulsar.x * width - pointerX * 18;
+        const y = pulsar.y * height - pointerY * 18;
+        const pulse = reducedMotion.matches ? 1 : 0.86 + (Math.sin(seconds * pulsar.speed * 2 + pulsar.size) + 1) * 0.12;
+        const glow = context.createRadialGradient(x, y, 0, x, y, pulsar.size * 1.8);
+        glow.addColorStop(0, `rgba(${pulsar.color}, 0.2)`);
+        glow.addColorStop(1, `rgba(${pulsar.color}, 0)`);
+        context.fillStyle = glow;
+        context.fillRect(x - pulsar.size * 1.8, y - pulsar.size * 1.8, pulsar.size * 3.6, pulsar.size * 3.6);
+
+        for (let ring = 0; ring < 3; ring += 1) {
+          context.beginPath();
+          context.ellipse(x, y, pulsar.size * pulse * (1 + ring * 0.34), pulsar.size * pulse * (0.36 + ring * 0.13), seconds * pulsar.speed * (ring % 2 ? -1 : 1), 0, Math.PI * 2);
+          context.strokeStyle = `rgba(${pulsar.color}, ${0.3 - ring * 0.07})`;
+          context.lineWidth = 1;
+          context.stroke();
+        }
+
+        context.save();
+        context.translate(x, y);
+        context.rotate(seconds * pulsar.speed);
+        context.beginPath();
+        context.moveTo(-pulsar.size * 1.45, 0);
+        context.lineTo(pulsar.size * 1.45, 0);
+        context.strokeStyle = `rgba(${pulsar.color}, 0.16)`;
+        context.lineWidth = pulsar.size * 0.15;
+        context.stroke();
+        context.restore();
+
+        context.beginPath();
+        context.arc(x, y, 2.2 * pulse, 0, Math.PI * 2);
+        context.fillStyle = "#f0f5ff";
+        context.shadowColor = `rgb(${pulsar.color})`;
+        context.shadowBlur = 14;
+        context.fill();
+        context.shadowBlur = 0;
+      });
+
+      if (!reducedMotion.matches) animationFrame = window.requestAnimationFrame(drawSpace);
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("pointermove", event => {
+      pointerX = event.clientX / width - 0.5;
+      pointerY = event.clientY / height - 0.5;
+    }, { passive: true });
+    reducedMotion.addEventListener("change", () => {
+      window.cancelAnimationFrame(animationFrame);
+      if (!reducedMotion.matches) animationFrame = window.requestAnimationFrame(drawSpace);
+      else drawSpace(0);
+    });
+    resizeCanvas();
+    if (!reducedMotion.matches) animationFrame = window.requestAnimationFrame(drawSpace);
+  </script>
 </body>
 </html>
